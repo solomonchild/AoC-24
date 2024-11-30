@@ -30,3 +30,10 @@
 *.exe
 *.out
 *.app
+
+.vscode/settings.json
+bin/
+.vs/
+*.ilk
+*.pdb
+inputs/

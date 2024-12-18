@@ -3,10 +3,16 @@
 #include <array>
 #include <functional>
 
-using Registers = std::array<int, 3>;
-using Op = std::function<void(Registers&, int operand, int& ip, std::vector<int>& output)>;
+using Registers = std::array<uint64_t, 3>;
+struct Context
+{
+	Registers regs;
+	int ip;
+	std::vector<uint64_t> out;
+};
+using Op = std::function<void(Context&, int)>;
 
-int decode_combo(Registers& regs, int v)
+uint64_t decode_combo(Registers& regs, int v)
 {
 	assert(v != 7);
 	if(v >= 0 && v <= 3)
@@ -23,89 +29,90 @@ Op decode_opcode(int v)
 	{
 		case 0:
 		{
-			return [](Registers& regs, int operand, int& ip, std::vector<int>&)
+			return [](Context& c, int operand)
 			{
-				int val = int(std::pow(2, decode_combo(regs, operand)));
-				regs[0] = regs[0]/val;
-				ip += 2;
+				int val = int(std::pow(2, decode_combo(c.regs, operand)));
+				c.regs[0] = c.regs[0]/val;
+				c.ip += 2;
 				DLOG("adv %d", operand);
 			};
 			break;
 		}
 		case 1:
 		{
-			return [](Registers& regs, int operand, int& ip, std::vector<int>&)
+			return [](Context& c, int operand)
 			{
-				regs[1] = regs[1]^operand;
-				ip += 2;
+				c.regs[1] = c.regs[1]^operand;
+				c.ip += 2;
 				DLOG("bxl %d", operand);
 			};
 			break;
 		}
 		case 2:
 		{
-			return [](Registers& regs, int operand, int& ip, std::vector<int>&)
+			return [](Context& c, int operand)
 			{
-				regs[1] = decode_combo(regs, operand)%8;
-				ip += 2;
+				c.regs[1] = decode_combo(c.regs, operand)%8;
+				c.ip += 2;
 				DLOG("bst %d", operand);
 			};
 			break;
 		}
 		case 3:
 		{
-			return [](Registers& regs, int operand, int& ip, std::vector<int>&)
+			return [](Context& c, int operand)
 			{
 				DLOG("jnz %d", operand);
-				if(!regs[0])
+				if(!c.regs[0])
 				{
-					ip +=2;
+					c.ip +=2;
 					return;
 				}
-				ip = operand;
+				c.ip = operand;
 			};
 			break;
 		}
 		case 4:
 		{
-			return [](Registers& regs, int, int& ip, std::vector<int>&)
+			return [](Context& c, int operand)
 			{
 				DLOG("bxc");
-				regs[1] = regs[1]^regs[2];
-				ip += 2;
+				c.regs[1] = c.regs[1]^c.regs[2];
+				c.ip += 2;
 			};
 			break;
 		}
 		case 5:
 		{
-			return [](Registers& regs, int operand, int& ip, std::vector<int>& out)
+			return [](Context& c, int operand)
 			{
 				DLOG("out %d", operand);
-				int dec = decode_combo(regs, operand)%8;
-				out.push_back(dec);
-				ip += 2;
+				int dec = decode_combo(c.regs, operand)%8;
+				c.out.push_back(dec);
+				c.ip += 2;
 			};
 			break;
 		}
 		case 6:
 		{
-			return [](Registers& regs, int operand, int& ip, std::vector<int>&)
+			return [](Context& c, int operand)
 			{
 				DLOG("bdv %d", operand);
-				int val = int(std::pow(2, decode_combo(regs, operand)));
-				regs[1] = regs[0]/val;
-				ip += 2;
+				int val = int(std::pow(2, decode_combo(c.regs, operand)));
+				c.regs[1] = c.regs[0]/val;
+				c.ip += 2;
 			};
 			break;
 		}
 		case 7:
 		{
-			return [](Registers& regs, int operand, int& ip, std::vector<int>&)
+			return [](Context& c, int operand)
 			{
 				DLOG("cdv %d", operand);
-				int val = int(std::pow(2, decode_combo(regs, operand)));
-				regs[2] = regs[0]/val;
-				ip += 2;
+				int val = int(std::pow(2, decode_combo(c.regs, operand)));
+				if(val)
+					c.regs[2] = c.regs[0]/val;
+				c.ip += 2;
 			};
 			break;
 		}
@@ -154,21 +161,34 @@ std::string DaySolver<17>::part1()
 {
 	auto [regs, program] = parse(std::ifstream(filename));
 
-	std::vector<int> out;
-	int ip = 0;
+	Context c{};
+	c.regs=regs;
 	
-	while(ip != program.size())
+	while(c.ip != program.size())
 	{
-		auto fn = decode_opcode(program[ip]);
-		fn(regs, program[ip+1], ip, out);
+		auto fn = decode_opcode(program[c.ip]);
+		fn(c, program[c.ip+1]);
 	}
-	assert((out == std::vector<int>{1,0,2,0,5,7,2,1,3}));
+	assert((c.out == std::vector<uint64_t>{1,0,2,0,5,7,2,1,3}));
 
 	std::string res;
-	for(auto o : out)
+	for(auto o : c.out)
 		res += std::to_string(o) + ",";
 	res.erase(res.end()-1);
 	return res;
+}
+std::pair<uint64_t, uint64_t> step(uint64_t a, const std::vector<int>& program) 
+{
+	Context c{};
+	c.regs[0] = a;
+	
+	while(c.out.empty() && c.ip < program.size())
+	{
+		auto fn = decode_opcode(program[c.ip]);
+		fn(c, program[c.ip+1]);
+	}
+	
+	return {uint64_t(c.regs[0]), c.out.empty()?UINT64_MAX:uint64_t(c.out[0])};
 }
 
 auto _find (uint64_t res, const std::vector<int>& program, uint64_t a, int idx)
@@ -181,7 +201,9 @@ auto _find (uint64_t res, const std::vector<int>& program, uint64_t a, int idx)
 	for(int i = 0; i <= 7; ++i)
 	{ 
 		auto _a = a + i;
-		const uint64_t b = (((_a & 0x7) ^ 7) ^ 7 ^ (_a >> ((_a & 0x7) ^ 7)))&0x7;
+		//const uint64_t b = (((_a & 0x7) ^ 7) ^ 7 ^ (_a >> ((_a & 0x7) ^ 7)))&0x7;
+		const auto [_, b] = step(_a, program);
+		assert(b >= 0);
 		if (expected == b)
 		{
 			if (auto r = _find((res<<3)+i, program, _a<<3, idx - 1); r != UINT64_MAX)
@@ -211,6 +233,15 @@ std::string DaySolver<17>::part2()
 		}
 		return out;
 	};
+	uint64_t a{64012472};
+	std::vector<int> out;
+	while(a) {
+		uint64_t cur{};
+		std::tie(a, cur) = step(a, program);
+		out.push_back(cur);
+	} 
+	assert((out == std::vector<int>{ 1,0,2,0,5,7,2,1,3 }));
+	assert((simulate(64012472, program) == std::vector<int>{ 1,0,2,0,5,7,2,1,3 }));
 #if 0
 	for(int i = 1; i < 1000000; i*=8)
 	{

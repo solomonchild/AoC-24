@@ -4,7 +4,7 @@ using Colors = std::vector<std::string>;
 using Key = std::pair<std::string, int>;
 using Cache = std::unordered_map<std::string_view, uint64_t>;
 
-uint64_t possible(Cache& cache, const std::string_view& q, int i, Colors& colors)
+uint64_t possible(Cache& cache, std::string_view q, int i, Colors& colors)
 {
 	auto key = q.substr(i);
 	if(cache.count(key))

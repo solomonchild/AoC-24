@@ -1,12 +1,10 @@
 #include "common.h"
 #include <queue>
-#include <set>
-#include <map>
-#include <stack>
-
 
 using Obstacles = std::unordered_set<Pos, pos_hash>;
 using Distances = std::unordered_map<Pos, int, pos_hash>;
+using Path = std::vector<Pos>;
+
 std::tuple<Obstacles, Pos, Pos, int, int> parse(std::istream& iss)
 {
 	Obstacles obsts;
@@ -44,7 +42,6 @@ bool oob(Pos pos, int height, int width)
 	return pos.real() <= 0 || pos.imag() <= 0 || pos.real() >= width || pos.imag() >= height;
 }
 
-using Path = std::vector<Pos>;
 std::pair<int, Path> find_fastest(Obstacles& obsts, int width, int height, Pos start, Pos end)
 {
 	std::queue<std::tuple<Pos, int, Path>> Q;

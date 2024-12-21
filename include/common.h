@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <array>
 #include <cassert>
 #include <chrono>
 #include <complex>
@@ -26,6 +27,10 @@ using Strings = std::vector<std::string>;
 using Ints = std::vector<int>;
 using Pos = std::complex<int>;
 using Dir = std::complex<int>;
+template<typename T1, typename T2>
+using Pair = std::pair<T1, T2>;
+template<typename T1, typename T2, typename T3>
+using Triple = std::tuple<T1, T2, T3>;
 
 struct Vec2
 {
@@ -46,6 +51,15 @@ struct Vec2
 	Vec2 operator*(const Vec2 &a) const
 	{
 		return {x * a.x, y * a.y};
+	}
+	Vec2 rotate90() const
+	{
+		return {-y, x};
+	}
+
+	Vec2 rotate_neg90() const
+	{
+		return {y, -x};
 	}
 };
 
@@ -75,6 +89,11 @@ if (DEBUG) { \
 do { \
 	fprintf(stderr, x "\n", ##__VA_ARGS__); \
 } while(false)
+
+static inline std::array<Vec2, 4> NEIGHBOUR_DELTAS 
+{
+		Vec2{-1, 0}, Vec2{1, 0}, Vec2{0, -1}, Vec2{0, 1}
+};
 
 static inline std::vector<Pos> NEIGHBOR_DELTAS 
 {

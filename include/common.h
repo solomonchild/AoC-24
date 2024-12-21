@@ -2,22 +2,64 @@
 
 #include <algorithm>
 #include <cassert>
-#include <string>
 #include <chrono>
-#include <fstream>
-#include <stdio.h>
-#include <vector>
 #include <complex>
+#include <fstream>
+#include <map>
+#include <queue>
+#include <stdio.h>
+#include <string>
 #include <unordered_map>
 #include <unordered_set>
+#include <vector>
 
 extern bool DEBUG;
+
+using u64 = uint64_t;
+template<typename T1, typename T2>
+using umap = std::unordered_map<T1, T2>;
+template<typename T, typename Hasher>
+using uset = std::unordered_set<T, Hasher>;
 
 using Grid = std::vector<std::string>;
 using Strings = std::vector<std::string>;
 using Ints = std::vector<int>;
 using Pos = std::complex<int>;
 using Dir = std::complex<int>;
+
+struct Vec2
+{
+	int x{}, y{};
+
+	auto operator<=>(const Vec2 &) const = default;
+
+	Vec2 operator+(const Vec2 &a) const
+	{
+		return {x + a.x, y + a.y};
+	}
+
+	Vec2 operator-(const Vec2 &a) const
+	{
+		return {x - a.x, y - a.y};
+	}
+
+	Vec2 operator*(const Vec2 &a) const
+	{
+		return {x * a.x, y * a.y};
+	}
+};
+
+namespace std
+{
+	template<>
+	struct hash<Vec2>
+	{
+		size_t operator()(const Vec2& v) const noexcept
+		{
+			return std::hash<int>()(v.x) * 13 ^ std::hash<int>()(v.y);
+		}
+	};
+};
 
 #define FORE(x, xs) for(auto& x : (xs))
 #define REP(i, n) for(int i = 0; i < (n); ++i)

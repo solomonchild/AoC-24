@@ -1,45 +1,69 @@
 #include "common.h"
 
-#include <functional>
+#include <numeric>
 
-using Path = std::vector<Vec2>;
-Path bfs(Vec2 start, Vec2 end, std::function<bool(const Vec2&)> should_add_neighbor)
+std::vector<i64> parse_numbers(std::ifstream ifs)
 {
-	std::queue<Pair<Vec2, Path>> Q;
-	Q.push({start, {}});
-	while(!Q.empty())
+	std::vector<i64> numbers;
+	for(std::string line; std::getline(ifs, line);)
 	{
-		auto [pos, path] = Q.front(); Q.pop();
-		path.push_back(pos);
-
-		if (pos == end)
-		{
-			return path;
-		}
-
-		for(auto d : NEIGHBOUR_DELTAS)
-		{
-			if (should_add_neighbor(pos+d))
-			{
-				Q.push({pos+d, path});
-			}
-		}
+		numbers.push_back(std::stoi(line));
 	}
-	return {};
+	return numbers;
 }
 
 template <>
 std::string DaySolver<22>::part1()
 {
-	std::ifstream ifs(filename);
-	for(std::string line; std::getline(ifs, line);)
+	auto numbers = parse_numbers(std::ifstream(filename));
+
+	for (int ni = 0; ni < numbers.size(); ++ni)
 	{
+		auto &num = numbers[ni];
+		for (int i = 0; i < 2000; ++i)
+		{
+			num = (num ^ num * 64) % 16777216;
+			num = (num ^ num / 32) % 16777216;
+			num = (num ^ num * 2048) % 16777216;
+		}
 	}
-	return "";
+	return std::to_string(std::accumulate(numbers.begin(), numbers.end(), i64(0)));
 }
 
 template <>
 std::string DaySolver<22>::part2()
 {
-	return "";
+	std::vector<i64> numbers = parse_numbers(std::ifstream(filename));
+
+	umap<int, int> total_price_by_quad;
+	for (int ni = 0; ni < numbers.size(); ++ni)
+	{
+		auto &num = numbers[ni];
+		uset<int> seen;
+		int diffs = 0;
+		for (int i = 0; i < 1999; ++i)
+		{
+
+			const int prev_price = num % 10;
+			num = (num ^ num * 64) % 16777216;
+			num = (num ^ num / 32) % 16777216;
+			num = (num ^ num * 2048) % 16777216;
+			const int price = num % 10;
+			const auto diff = price - prev_price;
+
+			diffs = ((diffs << 5) | (diff < 0 ? -diff + 10 : diff)) & 0x0fffff;
+
+			if (i >= 3 && price)
+			{
+				if (seen.insert(diffs).second)
+				{
+					total_price_by_quad[diffs] += price;
+				}
+			}
+		}
+	}
+	auto m = std::max_element(total_price_by_quad.begin(), total_price_by_quad.end(), [](const Pair<int, int>& a, const Pair<int, int>& b){
+		return a.second < b.second;
+	});
+	return std::to_string(m->second);
 }

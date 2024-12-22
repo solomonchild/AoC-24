@@ -30,7 +30,8 @@
 // #include "day19.cpp"
 // #include "day20.cpp"
 //#include "day21.cpp"
-#include "day22.cpp"
+// #include "day22.cpp"
+#include "day23.cpp"
 #endif
 
 using FuncAnsT = std::tuple<std::function<void(Part, InputType, std::string, std::string, bool)>, std::string, std::string>;
@@ -56,8 +57,8 @@ std::array Solutions= {
 	// FuncAnsT{&DaySolver<19>::solve, "338", "841533074412361"},
 	// FuncAnsT{&DaySolver<20>::solve, "1448", "1017615"},
 	// FuncAnsT{&DaySolver<21>::solve, "156714", "191139369248202"},
-	FuncAnsT{&DaySolver<22>::solve, "", ""},
-	// FuncAnsT{&DaySolver<23>::solve, "", ""},
+	// FuncAnsT{&DaySolver<22>::solve, "18694566361", "2100"},
+	FuncAnsT{&DaySolver<23>::solve, "", ""},
 	// FuncAnsT{&DaySolver<24>::solve, "", ""},
 	// FuncAnsT{&DaySolver<25>::solve, "", ""},
 };

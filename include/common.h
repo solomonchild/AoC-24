@@ -17,9 +17,10 @@
 extern bool DEBUG;
 
 using u64 = uint64_t;
+using i64 = int64_t;
 template<typename T1, typename T2>
 using umap = std::unordered_map<T1, T2>;
-template<typename T, typename Hasher>
+template<typename T, typename Hasher=std::hash<T>>
 using uset = std::unordered_set<T, Hasher>;
 
 using Grid = std::vector<std::string>;

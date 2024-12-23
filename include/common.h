@@ -275,7 +275,7 @@ template<int _Day> struct DaySolver
 			cnt /= 1'000;
 			quantity = "ms";
 		}
-		if(cnt >= 1'000'000)
+		if(cnt >= 1'000)
 		{
 			cnt /= 1'000;
 			quantity = "s";

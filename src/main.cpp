@@ -58,7 +58,7 @@ std::array Solutions= {
 	// FuncAnsT{&DaySolver<20>::solve, "1448", "1017615"},
 	// FuncAnsT{&DaySolver<21>::solve, "156714", "191139369248202"},
 	// FuncAnsT{&DaySolver<22>::solve, "18694566361", "2100"},
-	FuncAnsT{&DaySolver<23>::solve, "", ""},
+	FuncAnsT{&DaySolver<23>::solve, "1170", "bo,dd,eq,ik,lo,lu,ph,ro,rr,rw,uo,wx,yg"},
 	// FuncAnsT{&DaySolver<24>::solve, "", ""},
 	// FuncAnsT{&DaySolver<25>::solve, "", ""},
 };

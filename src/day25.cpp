@@ -1,105 +1,77 @@
 #include "common.h"
 
-#include <functional>
-#include <stack>
-
-using Path = std::vector<Vec2>;
-Path dfs(Vec2 start, Vec2 end, std::function<bool(const Vec2&)> should_add_neighbor)
+bool is_lock(Strings& lock_key)
 {
-	std::stack<Pair<Vec2, Path>> Q;
-	Q.push({start, {}});
-	while(!Q.empty())
+	for (auto c : lock_key[0])
 	{
-		auto [pos, path] = Q.top(); Q.pop();
-		path.push_back(pos);
-
-		if (pos == end)
-		{
-			return path;
-		}
-
-		for(auto d : NEIGHBOUR_DELTAS)
-		{
-			if (should_add_neighbor(pos+d))
-			{
-				Q.push({pos+d, path});
-			}
-		}
+		if (c == '#')
+			return true;
 	}
-	return {};
+	return false;
 }
-
-Path bfs(Vec2 start, Vec2 end, std::function<bool(const Vec2&)> should_add_neighbor)
-{
-	std::queue<Pair<Vec2, Path>> Q;
-	Q.push({start, {}});
-	while(!Q.empty())
-	{
-		auto [pos, path] = Q.front(); Q.pop();
-		path.push_back(pos);
-
-		if (pos == end)
-		{
-			return path;
-		}
-
-		for(auto d : NEIGHBOUR_DELTAS)
-		{
-			if (should_add_neighbor(pos+d))
-			{
-				Q.push({pos+d, path});
-			}
-		}
-	}
-	return {};
-}
-
-Path djikstra(Vec2 start, Vec2 end, std::function<bool(const Vec2&)> should_add_neighbor)
-{
-	struct Elem
-	{
-		Vec2 pos;
-		int dist;
-		Path path;
-	};
-	auto cmp = [](const Elem& a, const Elem& b){
-		return a.dist > b.dist;
-	};
-	std::priority_queue<Elem, std::vector<Elem>, decltype(cmp)> Q(cmp);
-	Q.push({start});
-	while(!Q.empty())
-	{
-		auto [pos, dist, path] = Q.top(); Q.pop();
-		path.push_back(pos);
-
-		if (pos == end)
-		{
-			return path;
-		}
-
-		for(auto d : NEIGHBOUR_DELTAS)
-		{
-			if (should_add_neighbor(pos+d))
-			{
-				Q.push({pos+d, dist+1, path});
-			}
-		}
-	}
-	return {};
-}
-
 
 template <>
 std::string DaySolver<25>::part1()
 {
 	std::ifstream ifs(filename);
 
+	std::vector<Ints> keys;
+	std::vector<Ints> locks;
+	Strings lock_key;
+
+	auto process = [&]() -> int
+	{
+		const bool lock = is_lock(lock_key);
+		std::vector<int> &cur = lock ? (locks.push_back({}), locks.back()) : (keys.push_back({}), keys.back());
+
+		for (int j = 0; j < lock_key[0].size(); ++j)
+		{
+			int height = 0;
+			for (int i = 0; i < lock_key.size(); ++i)
+			{
+				if (lock_key[i][j] == '#')
+					++height;
+			}
+			cur.push_back(height);
+		}
+		const int height = lock_key.size();
+		lock_key.clear();
+		return height;
+	};
+
 	for(std::string line; std::getline(ifs, line);)
 	{
+		if(line.empty())
+		{
+			process();
+			continue;
+		}
+		lock_key.push_back(line);
 	}
-	return std::to_string(0);
-}
+	const int height = process();
 
+	auto overlap = [&](const std::vector<int>& k, const std::vector<int>& l)
+	{
+		assert(l.size() == k.size());
+		for(int i = 0; i < l.size(); ++i)
+		{
+			if(k[i] + l[i] > height)
+			return false;
+		}
+		return true;
+	};
+
+	int res = 0;
+	for(const auto& k : keys)
+	{
+		for (const auto& l : locks)
+		{
+			if(overlap(k, l))
+			++res;
+		}
+	}
+	return std::to_string(res);
+}
 
 template <>
 std::string DaySolver<25>::part2()

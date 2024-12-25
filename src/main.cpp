@@ -62,7 +62,7 @@ std::array Solutions= {
 	// FuncAnsT{&DaySolver<22>::solve, "18694566361", "2100"},
 	// FuncAnsT{&DaySolver<23>::solve, "1170", "bo,dd,eq,ik,lo,lu,ph,ro,rr,rw,uo,wx,yg"},
 	// FuncAnsT{&DaySolver<24>::solve, "45121475050728", "gqp,hsw,jmh,mwk,qgd,z10,z18,z33"}, 
-	FuncAnsT{&DaySolver<25>::solve, "", ""},
+	FuncAnsT{&DaySolver<25>::solve, "2815", ""},
 };
 
 bool DEBUG = false;

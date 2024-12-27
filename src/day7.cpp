@@ -73,54 +73,43 @@ std::string DaySolver<7>::part2()
             nums.push_back(a);
         }
 
-        auto SZ = nums.size();
-        uint64_t second = std::pow(2, SZ - 1) - 1;
-        const uint64_t MAX = std::pow(2, SZ-1);
-        while(second != UINT64_MAX)
+        const auto SZ = nums.size();
+        uint64_t mask = std::pow(2, SZ-1);
+        bool done = false;
+        while (mask != UINT64_MAX)
         {
-            uint64_t mask = MAX;
-            auto max = MAX;
-            bool done = false;
-            while (mask != UINT64_MAX)
+            std::vector<uint64_t> pending_override{uint64_t(nums[0])};
+            for (int i = 0; i < SZ - 1; ++i)
             {
-                while(max != 0 && ((mask&max) == 0))
-                    max >>= 1;
-                if(max & second)
+                auto new_p = pending_override;
+                const auto num = nums[i + 1];
+                const int op = ((mask >> (SZ - i - 2)) & 0x1);
+                if (!op)
                 {
-                    while(max & second)
-                        max >>= 1;
-                    if(!max)
-                        mask = 0;
-                    else
-                        mask = (max << 1) - 1;
+                    for (auto &p : new_p)
+                        p += num;
                 }
-
-                uint64_t pending = nums[0];
-                for (int i = 0; i < SZ - 1; ++i)
+                else
                 {
-                    const auto num = nums[i+1];
-                    int op_override = ((second >> (SZ - i - 2)) & 0x1);
-                    int op = ((mask >> (SZ - i - 2)) & 0x1);
-                    if (op_override)
-                        pending = pending * std::pow(10, int(std::log10(num))+1) + nums[i + 1];
-                    else if (!op)
-                        pending = pending + num;
-                    else
-                        pending = pending * num;
-                    if (pending > res)
-                        break;
+                    for (auto &p : new_p)
+                        p *= num;
                 }
-                if (pending == res)
+                for (auto &p : pending_override)
+                    new_p.push_back(p * std::pow(10, int(std::log10(num)) + 1) + nums[i + 1]);
+                pending_override = std::move(new_p);
+            }
+            for (auto &p : pending_override)
+            {
+                if (p == res)
                 {
                     final_res += res;
                     done = true;
                     break;
                 }
-                --mask;
             }
             if (done)
                 break;
-            --second;
+            --mask;
         }
     }
     return std::to_string(final_res);

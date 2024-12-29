@@ -100,7 +100,7 @@ std::string DaySolver<15>::part1()
 	return std::to_string(res);
 }
 
-std::tuple<Grid, Pos, std::string> parse_grid2(std::ifstream& ifs)
+std::tuple<Grid, Pos, std::string> parse_grid2(std::ifstream ifs)
 {
 	Pos start{};
     Grid grid;
@@ -255,7 +255,7 @@ Pos do_move2(Pos pos, Pos dir, Grid& grid)
 
 			while(!lvl_boxes.empty())
 			{
-				int lvl = lvl_boxes.size();
+				int lvl = int(lvl_boxes.size());
 				const int y = (pos+dir*lvl).imag();
 				const int prev_y = (pos+dir*(lvl-1)).imag();
 				const int x = (pos+dir*lvl).real();
@@ -313,9 +313,9 @@ static void test()
 			if(line.empty())
 				continue;
 			grid.push_back(line);
-			if(int i = line.find("@"); i != std::string::npos)
+			if(size_t i = line.find("@"); i != std::string::npos)
 			{
-				pos = {i, int(grid.size()-1)};
+				pos = {int(i), int(grid.size()-1)};
 			}
 		}
 		return std::make_pair(grid, pos);

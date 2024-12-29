@@ -67,9 +67,9 @@ std::string DaySolver<2>::part1()
 
 std::vector<int> split(const std::string& str)
 {
-	int i = 0; 
+	size_t i = 0; 
 	std::vector<int> ret;
-	for(int j = str.find(" ", i); j != std::string::npos; j = str.find(" ", i)) 
+	for(size_t j = str.find(" ", i); j != std::string::npos; j = str.find(" ", i)) 
 	{
 		while(j < str.size() && str[j] == ' ')
 			++j;

@@ -80,7 +80,7 @@ std::string DaySolver<18>::part2()
 	};
 
 	int l = 0;
-	int r = positions.size();
+	int r = int(positions.size());
 	while(l < r)
 	{
 		const int mid = (l+r)/2;

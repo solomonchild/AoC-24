@@ -155,7 +155,7 @@ inline std::pair<Strings, std::string> right(Strings&& strings)
 	return {strings, s};
 }
 
-static constexpr const char OOB = 0xff;
+static constexpr const unsigned char OOB = 0xff;
 
 static inline char peek(const Grid& grid, int i, int j)
 {
@@ -207,8 +207,8 @@ template<>
 inline std::vector<std::string> split(const std::string& line, const std::string& delim)
 {
     Strings ret;
-    int start = 0;
-    for(int j = line.find(delim, start); j != std::string::npos; start = j + delim.size(), j=line.find(delim, start))
+    size_t start = 0;
+    for(size_t j = line.find(delim, start); j != std::string::npos; start = j + delim.size(), j=line.find(delim, start))
     {
         ret.push_back(line.substr(start, j - start));
     }
@@ -220,8 +220,8 @@ template<>
 inline std::vector<int> split(const std::string& line, const std::string& delim)
 {
     Ints ret;
-    int start = 0;
-    for(int j = line.find(delim, start); j != std::string::npos; start = j + delim.size(), j=line.find(delim, start))
+    size_t start = 0;
+    for(size_t j = line.find(delim, start); j != std::string::npos; start = j + delim.size(), j=line.find(delim, start))
     {
         ret.push_back(std::stoi(line.substr(start, j - start)));
     }
@@ -248,11 +248,11 @@ template<int _Day> struct DaySolver
 	static std::string part1();
 	static std::string part2();
 
-    static void solve(Part part, InputType input_type, std::string expected_1st = "", std::string expected_2nd = "", bool time = false)
+    static void solve(Part part, const std::string& input_dir, std::string expected_1st = "", std::string expected_2nd = "", bool time = false)
 	{
 		{
 			char buf[32]{};
-			snprintf(buf, sizeof(buf), input_type == InputType::Real ? "input/real/day%d.txt" : "input/test/day%d.txt", DaySolver::Day);
+			snprintf(buf, sizeof(buf), "%s/day%d.txt", input_dir.c_str(), DaySolver::Day);
 			filename=  buf;
 		}
 		auto start = std::chrono::steady_clock::now();

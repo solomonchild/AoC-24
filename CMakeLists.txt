@@ -1,0 +1,6 @@
+project(aoc)
+cmake_minimum_required(VERSION 3.15)
+file(GLOB SRC src/*.cpp include/*h)
+add_executable(${PROJECT_NAME} ${SRC} )
+target_include_directories(${PROJECT_NAME} PRIVATE include)
+target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)

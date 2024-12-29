@@ -5,7 +5,7 @@ using Obstacles = std::unordered_set<Pos, pos_hash>;
 using Distances = std::unordered_map<Pos, int, pos_hash>;
 using Path = std::vector<Pos>;
 
-std::tuple<Obstacles, Pos, Pos, int, int> parse(std::istream& iss)
+std::tuple<Obstacles, Pos, Pos, int, int> parse(std::istream&& iss)
 {
 	Obstacles obsts;
 	Pos start;
@@ -17,7 +17,7 @@ std::tuple<Obstacles, Pos, Pos, int, int> parse(std::istream& iss)
 		if(line.empty())
 			continue;
 		if(width == 0)
-			width = line.size();
+			width = int(line.size());
 
 		for (int i = 0; i < line.size(); ++i)
 		{
@@ -127,8 +127,8 @@ void test()
 #.#.#.#.#.#.###
 #...#...#...###
 ###############)!<";
-		std::istringstream oss(t);
-		auto [obs, start, end, h, w] = parse(std::move(oss));
+		std::istringstream iss(t);
+		auto [obs, start, end, h, w] = parse(std::move(iss));
 
 		auto [best_score, path] = find_fastest(obs, w, h, start, end);
 		auto res = get_cheats_num(path, 2, 0, best_score, obs, w, h, start, end);

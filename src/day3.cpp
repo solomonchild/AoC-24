@@ -5,7 +5,7 @@
 #include <string>
 #include <regex>
 
-static inline char peek(const std::string& str, int idx)
+static inline unsigned char peek(const std::string& str, int idx)
 {
 	if(idx >= str.size())
 		return 0xff;

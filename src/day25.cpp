@@ -34,7 +34,7 @@ std::string DaySolver<25>::part1()
 			}
 			cur.push_back(height);
 		}
-		const int height = lock_key.size();
+		const int height = int(lock_key.size());
 		lock_key.clear();
 		return height;
 	};

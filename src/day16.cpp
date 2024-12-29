@@ -3,7 +3,7 @@
 #include <sstream>
 #include <queue>
 
-std::tuple<Grid, Pos, Pos> parse(std::istream& iss)
+std::tuple<Grid, Pos, Pos> parse(std::istream&& iss)
 {
 	Grid grid;
 	Pos start;
@@ -13,13 +13,13 @@ std::tuple<Grid, Pos, Pos> parse(std::istream& iss)
 		if(line.empty())
 			continue;
 		grid.push_back(line);
-		if(int i = line.find("E"); i != std::string::npos)
+		if(auto i = line.find("E"); i != std::string::npos)
 		{
-			end = {i, int(grid.size()-1)};
+			end = {int(i), int(grid.size()-1)};
 		}
-		if(int i = line.find("S"); i != std::string::npos)
+		if(auto i = line.find("S"); i != std::string::npos)
 		{
-			start = {i, int(grid.size()-1)};
+			start = {int(i), int(grid.size()-1)};
 		}
 	}
 	return {grid, start, end};
@@ -102,7 +102,7 @@ std::pair<int, int> djikstra(Grid& grid, Pos start, Pos end)
 			Q.push({new_pos, d, new_cost, path});
 		}
 	}
-	int res = best.size();
+	int res = int(best.size());
 	DLOG("%d", res);
 	return {best_cost, res};
 }
@@ -137,7 +137,7 @@ static void test()
 #######)!";
 		DLOG("-----------TEST-------------");
 		std::stringstream iss(input);
-		auto [grid, start, end] = parse(iss);
+		auto [grid, start, end] = parse(std::move(iss));
 		auto [res,_] = djikstra(grid, start, end);
 		DLOG("%d", res);
 		assert( res == 1005);
@@ -151,7 +151,7 @@ static void test()
 ###############)!";
 		DLOG("-----------TEST-------------");
 		std::stringstream iss(input);
-		auto [grid, start, end] = parse(iss);
+		auto [grid, start, end] = parse(std::move(iss));
 		auto [res, _] = djikstra(grid, start, end);
 		DLOG("%d", res);
 		assert( res == 1013);
@@ -165,7 +165,7 @@ static void test()
 #S..#.....#...#
 ###############)!";
 		std::stringstream iss(input);
-		auto [grid, start, end] = parse(iss);
+		auto [grid, start, end] = parse(std::move(iss));
 		auto [res, _] = djikstra(grid, start, end);
 		DLOG("Res: %d", res);
 		print(grid);
@@ -194,7 +194,7 @@ static void test()
 		std::stringstream iss(input);
 
 		DLOG("-----------TEST-------------");
-		auto [grid, start, end] = parse(iss);
+		auto [grid, start, end] = parse(std::move(iss));
 		auto [res, nodes] = djikstra(grid, start, end);
 		DLOG("Res: %d", res);
 		print(grid);
@@ -221,7 +221,7 @@ static void test()
 		std::stringstream iss(input);
 
 		DLOG("-----------TEST-------------");
-		auto [grid, start, end] = parse(iss);
+		auto [grid, start, end] = parse(std::move(iss));
 		auto [res, nodes] = djikstra(grid, start, end);
 		DLOG("Res: %d", res);
 		print(grid);

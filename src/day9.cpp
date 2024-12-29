@@ -31,14 +31,14 @@ std::string DaySolver<9>::part1()
         }
         else
         {
-            int idx = vec.size();
+            int idx = int(vec.size());
             for(int j = 0; j < f; ++j)
             {
                 vec.push_back(-1);
             }
         }
     }
-    int move_idx = vec.size()-1;
+    int move_idx = int(vec.size()-1);
     int write_idx = 0;
     while(write_idx < move_idx)
     {
@@ -68,13 +68,13 @@ std::string DaySolver<9>::part2()
     std::string line;
     std::getline(ifs, line);
 
-    std::vector<uint64_t> vec;
+    std::vector<int> vec;
     vec.reserve(line.size() * 5);
     std::vector<std::pair<int, int>> free_list;
     const int PT = -1;
 
     {
-        uint64_t id = 0;
+        int id = 0;
         for (int i = 0; i < line.size(); ++i)
         {
             const int f = (line[i] - '0');
@@ -107,7 +107,7 @@ std::string DaySolver<9>::part2()
     std::sort(free_list.begin(), free_list.end(), [](const auto& a, const auto& b){
         return a.first < b.first;
     });
-    long long move_idx = vec.size()-1;
+    int move_idx = int(vec.size()-1);
     while(move_idx >= 0)
     {
         while(move_idx >= 0 && vec[move_idx] == PT)

@@ -234,13 +234,13 @@ std::string DaySolver<17>::part2()
 		return out;
 	};
 	uint64_t a{64012472};
-	std::vector<int> out;
+	std::vector<uint64_t> out;
 	while(a) {
 		uint64_t cur{};
 		std::tie(a, cur) = step(a, program);
-		out.push_back(cur);
+		out.push_back(int(cur));
 	} 
-	assert((out == std::vector<int>{ 1,0,2,0,5,7,2,1,3 }));
+	assert((out == std::vector<uint64_t>{ 1,0,2,0,5,7,2,1,3 }));
 	assert((simulate(64012472, program) == std::vector<int>{ 1,0,2,0,5,7,2,1,3 }));
 #if 0
 	for(int i = 1; i < 1000000; i*=8)
@@ -255,6 +255,6 @@ std::string DaySolver<17>::part2()
 
 	// test that the RE attempt was successfull
 	assert((simulate(64012472, program) == std::vector<int>{ 1,0,2,0,5,7,2,1,3 }));
-	auto res = _find(0, program, 0, program.size()-1);
+	auto res = _find(0, program, 0, int(program.size()-1));
 	return std::to_string(res);
 }

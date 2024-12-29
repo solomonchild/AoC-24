@@ -24,7 +24,7 @@ uint64_t reduce(uint64_t num, int day)
     else if (len % 2 == 0)
     {
 
-        uint64_t pow = std::pow(10, len / 2);
+        uint64_t pow = uint64_t(std::pow(10, len / 2));
         uint64_t left = stone / pow;
         uint64_t right = stone % pow;
         ret += reduce(right, day-1) + reduce(left, day-1);

@@ -22,9 +22,9 @@ std::pair<Grid, Pos> parse(std::ifstream ifs)
     for(std::string line; std::getline(ifs, line); )
     {
         map.push_back(line);
-        if(int f = line.find("^"); f != std::string::npos)
+        if(auto f = line.find("^"); f != std::string::npos)
         {
-            pos = {f, row};
+            pos = {int(f), row};
         }
         ++row;
     }

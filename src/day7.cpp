@@ -15,6 +15,8 @@ std::string DaySolver<7>::part1()
         long long res{};
         ifs >> res;
         ifs.ignore();
+        if(ifs.eof())
+        break;
 
         Ints nums;
         while (ifs.peek() != '\n' && !ifs.eof())
@@ -24,7 +26,7 @@ std::string DaySolver<7>::part1()
             nums.push_back(a);
         }
 
-        uint64_t mask = std::pow(2, nums.size()-1) - 1;
+        uint64_t mask = uint64_t(std::pow(2, nums.size()-1) - 1);
         while(mask != UINT64_MAX)
         {
 
@@ -72,35 +74,44 @@ std::string DaySolver<7>::part2()
             ifs >> a;
             nums.push_back(a);
         }
+        if(nums.empty())
+            break;
 
         const auto SZ = nums.size();
-        uint64_t mask = std::pow(2, SZ-1);
+        uint64_t mask = uint64_t(std::pow(2, SZ-1));
         bool done = false;
+        std::array<uint64_t, 4096> pending_override{};
+        size_t pending_len = 0;
         while (mask != UINT64_MAX)
         {
-            std::vector<uint64_t> pending_override{uint64_t(nums[0])};
+            pending_override[0] = uint64_t(nums[0]);
+            pending_len = 1;
+
             for (int i = 0; i < SZ - 1; ++i)
             {
-                auto new_p = pending_override;
                 const auto num = nums[i + 1];
+                const size_t og_pending_len = pending_len;
+                for(size_t j = 0; j < og_pending_len; ++j)
+                {
+                    pending_override[pending_len++] = pending_override[j] * uint64_t(std::pow(10, int(std::log10(num)) + 1)) + nums[i + 1];
+                    assert(pending_len < pending_override.size());
+                }
                 const int op = ((mask >> (SZ - i - 2)) & 0x1);
                 if (!op)
                 {
-                    for (auto &p : new_p)
-                        p += num;
+                    for(size_t j = 0; j < og_pending_len; ++j)
+                        pending_override[j] += num;
                 }
                 else
                 {
-                    for (auto &p : new_p)
-                        p *= num;
+                    for(size_t j = 0; j < og_pending_len; ++j)
+                        pending_override[j] *= num;
                 }
-                for (auto &p : pending_override)
-                    new_p.push_back(p * std::pow(10, int(std::log10(num)) + 1) + nums[i + 1]);
-                pending_override = std::move(new_p);
             }
-            for (auto &p : pending_override)
+            assert(pending_len < pending_override.size());
+            for(size_t i = 0; i < pending_len; ++i)
             {
-                if (p == res)
+                if (pending_override[i] == res)
                 {
                     final_res += res;
                     done = true;

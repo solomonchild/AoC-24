@@ -30,7 +30,7 @@ uint64_t possible(Cache& cache, std::string_view q, int i, Colors& colors)
 		}
 
 		if(eq)
-			res += possible(cache, q, i + clr.size(), colors);
+			res += possible(cache, q, i + int(clr.size()), colors);
 		cache[key] = res;
 	}
 	return res;

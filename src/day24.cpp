@@ -347,14 +347,6 @@ std::string DaySolver<24>::part2()
 	assert(xs.size() == ys.size());
 
 	Errors errors;
-	for(int i = 0; i < zs.size(); ++i)
-	{
-		//last z will have OR
-		if (i != zs.size() - 1)
-		;
-			//check_z(errors, gates, zs[i]);
-	}
-
 	for(int i = 0; i < xs.size(); ++i)
 	{
 		auto x = xs[i];
